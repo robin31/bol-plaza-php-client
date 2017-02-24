@@ -204,8 +204,15 @@ class BolPlazaDataParser
     {
         foreach ($entityData as $key => $value) {
             if (is_string($value) || is_numeric($value)) {
-                // Attributes
-                $xmlEntity->addChild($key, $value);
+              // Attributes
+              if (preg_match('/[^\w_\-\s\.,]/i', $value)) {
+                  $child = $xmlEntity->addChild($key);
+                  $child_node = dom_import_simplexml($child);
+                  $child_owner = $child_node->ownerDocument;
+                  $child_node->appendChild($child_owner->createCDATASection($value));
+              } else {
+                  $xmlEntity->addChild($key, $value);
+              }
             } elseif ($value instanceof BaseModel) {
                 // Nested entities
                 self::getXmlForSubelements($value, $xmlEntity);
