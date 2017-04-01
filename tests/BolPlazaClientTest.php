@@ -1,5 +1,15 @@
 <?php
-class BolPlazaClientTest extends PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+use Wienkit\BolPlazaClient\Requests\BolPlazaUpsertRequest;
+use Wienkit\BolPlazaClient\Entities\BolPlazaCancellation;
+use Wienkit\BolPlazaClient\Entities\BolPlazaShipmentRequest;
+use Wienkit\BolPlazaClient\Entities\BolPlazaTransport;
+use Wienkit\BolPlazaClient\Entities\BolPlazaChangeTransportRequest;
+use Wienkit\BolPlazaClient\Entities\BolPlazaReturnItemStatusUpdate;
+use Wienkit\BolPlazaClient\BolPlazaClient;
+
+class BolPlazaClientTest extends TestCase
 {
     /**
      * @var Wienkit\BolPlazaClient\BolPlazaClient
@@ -11,7 +21,7 @@ class BolPlazaClientTest extends PHPUnit_Framework_TestCase
         $publicKey = getenv('PHP_PUBKEY');
         $privateKey = getenv('PHP_PRIVKEY');
 
-        $this->client = new Wienkit\BolPlazaClient\BolPlazaClient($publicKey, $privateKey);
+        $this->client = new BolPlazaClient($publicKey, $privateKey);
         $this->client->setTestMode(true);
     }
 
@@ -45,7 +55,7 @@ class BolPlazaClientTest extends PHPUnit_Framework_TestCase
     public function testOrderItemCancellation(array $orders)
     {
         $orderItem = $orders[0]->OrderItems[0];
-        $cancellation = new Wienkit\BolPlazaClient\Entities\BolPlazaCancellation();
+        $cancellation = new BolPlazaCancellation();
         $cancellation->DateTime = '2011-01-01T12:00:00';
         $cancellation->ReasonCode = 'REQUESTED_BY_CUSTOMER';
         $result = $this->client->cancelOrderItem($orderItem, $cancellation);
@@ -54,12 +64,12 @@ class BolPlazaClientTest extends PHPUnit_Framework_TestCase
 
     public function testProcessShipments()
     {
-        $shipment = new Wienkit\BolPlazaClient\Entities\BolPlazaShipmentRequest();
+        $shipment = new BolPlazaShipmentRequest();
         $shipment->OrderItemId = '123';
         $shipment->ShipmentReference = 'bolplazatest123';
         $shipment->DateTime = date('Y-m-d\TH:i:s');
         $shipment->ExpectedDeliveryDate = date('Y-m-d\TH:i:s');
-        $transport = new Wienkit\BolPlazaClient\Entities\BolPlazaTransport();
+        $transport = new BolPlazaTransport();
         $transport->TransporterCode = 'GLS';
         $transport->TrackAndTrace = '123456789';
         $shipment->Transport = $transport;
@@ -92,7 +102,7 @@ class BolPlazaClientTest extends PHPUnit_Framework_TestCase
     public function testHandleReturnItem(array $returnItems)
     {
         $returnItem = $returnItems[0];
-        $returnStatus = new Wienkit\BolPlazaClient\Entities\BolPlazaReturnItemStatusUpdate();
+        $returnStatus = new BolPlazaReturnItemStatusUpdate();
         $returnStatus->StatusReason = 'PRODUCT_RECEIVED';
         $returnStatus->QuantityReturned = '2';
         $result = $this->client->handleReturnItem($returnItem, $returnStatus);
@@ -106,7 +116,7 @@ class BolPlazaClientTest extends PHPUnit_Framework_TestCase
     public function testChangeTransport(array $shipments)
     {
         $shipment = $shipments[0];
-        $changeRequest = new Wienkit\BolPlazaClient\Entities\BolPlazaChangeTransportRequest();
+        $changeRequest = new BolPlazaChangeTransportRequest();
         $changeRequest->TransporterCode = '3SNEW941245';
         $changeRequest->TrackAndTrace = 'DPD-BE';
         $result = $this->client->changeTransport($shipment, $changeRequest);
@@ -129,45 +139,85 @@ class BolPlazaClientTest extends PHPUnit_Framework_TestCase
 
     public function testCreateOffer()
     {
-        $offerCreate = new Wienkit\BolPlazaClient\Entities\BolPlazaOfferCreate();
-        $offerCreate->EAN = '0619659077013';
-        $offerCreate->Condition = 'NEW';
-        $offerCreate->Price = '10.00';
-        $offerCreate->DeliveryCode = '24uurs-16';
-        $offerCreate->QuantityInStock = '1';
-        $offerCreate->Publish = 'true';
-        $offerCreate->ReferenceCode = '1234567890';
-        $offerCreate->Description = 'This is a new product so this description is of no use.';
-        return $this->client->createOffer("1", $offerCreate);
+        $upsertRequest = new BolPlazaUpsertRequest();
+        $upsertRequest->EAN = '9789076174082';
+        $upsertRequest->Condition = 'REASONABLE';
+        $upsertRequest->Price = '7.50';
+        $upsertRequest->DeliveryCode = '3-5d';
+        $upsertRequest->QuantityInStock = '1';
+        $upsertRequest->Publish = 'true';
+        $upsertRequest->ReferenceCode = 'HarryPotter-2ehands';
+        $upsertRequest->Description = 'boek met koffievlekken';
+        $upsertRequest->Title = '';
+        $upsertRequest->FulfillmentMethod = 'FBR';
+        $exceptionThrown = false;
+        try {
+            $this->client->createOffer($upsertRequest);
+        } catch (Exception $e) {
+            $exceptionThrown = true;
+        }
+        $this->assertFalse($exceptionThrown);
     }
 
     public function testUpdateOffer()
     {
-        $offerUpdate = new Wienkit\BolPlazaClient\Entities\BolPlazaOfferUpdate();
-        $offerUpdate->Price = '12.00';
-        $offerUpdate->DeliveryCode = '24uurs-16';
-        $offerUpdate->Publish = 'true';
-        $offerUpdate->ReferenceCode = '1234567890';
-        $offerUpdate->Description = 'This is a new product so this description is of no use.';
-        return $this->client->updateOffer("1", $offerUpdate);
+        $upsertRequest = new BolPlazaUpsertRequest();
+        $upsertRequest->EAN = '9789076174082';
+        $upsertRequest->Condition = 'REASONABLE';
+        $upsertRequest->Price = '12.00';
+        $upsertRequest->DeliveryCode = '24uurs-16';
+        $upsertRequest->Publish = 'true';
+        $upsertRequest->ReferenceCode = 'HarryPotter-2ehands';
+        $exceptionThrown = false;
+        try {
+            $this->client->updateOffer($upsertRequest);
+        } catch (Exception $e) {
+            $exceptionThrown = true;
+        }
+        $this->assertFalse($exceptionThrown);
     }
 
     public function testUpdateOfferStock()
     {
-        $stockUpdate = new Wienkit\BolPlazaClient\Entities\BolPlazaStockUpdate();
-        $stockUpdate->QuantityInStock = '2';
-        return $this->client->updateOfferStock("1", $stockUpdate);
+        $upsertRequest = new BolPlazaUpsertRequest();
+        $upsertRequest->EAN = '9789076174082';
+        $upsertRequest->Condition = 'REASONABLE';
+        $upsertRequest->QuantityInStock = '2';
+        $exceptionThrown = false;
+        try {
+            $this->client->updateOfferStock($upsertRequest);
+        } catch (Exception $e) {
+            $exceptionThrown = true;
+        }
+        $this->assertFalse($exceptionThrown);
     }
 
     public function testDeleteOffer()
     {
-        return $this->client->deleteOffer("1");
+        $exceptionThrown = false;
+        try {
+            $this->client->deleteOffer('9789076174082', 'REASONABLE');
+        } catch (Exception $e) {
+            $exceptionThrown = true;
+        }
+        $this->assertFalse($exceptionThrown);
+    }
+
+    public function testGetCommission()
+    {
+        $exceptionThrown = false;
+        try {
+            $this->client->getCommission('9789076174082', 'REASONABLE', 100);
+        } catch (Exception $e) {
+            $exceptionThrown = true;
+        }
+        $this->assertFalse($exceptionThrown);
     }
 
     public function testGetOwnOffers()
     {
         $result = $this->client->getOwnOffers();
-        $this->assertEquals($result->Url, 'https://test-plazaapi.bol.com/offers/v1/export/offers.csv');
+        $this->assertEquals($result->Url, 'https://test-plazaapi.bol.com/offers/v2/export/offers.csv');
         return $result->Url;
     }
 

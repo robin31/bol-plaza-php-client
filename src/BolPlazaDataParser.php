@@ -33,7 +33,7 @@ class BolPlazaDataParser
      * Returns a single filled entity from SimpleXMLElement response
      *
      * @param string $entity
-     * @param SimpleXMLElement $xmlElement
+     * @param SimpleXMLElement|string $xml
      * @return BaseModel
      */
     public static function createEntityFromResponse($entity, $xml)
@@ -80,7 +80,7 @@ class BolPlazaDataParser
      * Parse a namespaced XML response and turn it into a SimpleXMLElement with the root data
      *
      * @param string $xmlString
-     * @param array $namespaces
+     * @param string  $namespace
      * @return SimpleXMLElement
      */
     public static function parseXmlResponse($xmlString, $namespace = '')
@@ -165,7 +165,7 @@ class BolPlazaDataParser
      */
     public static function createOfferXmlFromEntity($entity)
     {
-        return self::createNamespacedXmlFromEntity('http://plazaapi.bol.com/offers/xsd/api-1.0.xsd', $entity);
+        return self::createNamespacedXmlFromEntity('https://plazaapi.bol.com/offers/xsd/api-2.0.xsd', $entity);
     }
 
     /**
@@ -197,8 +197,8 @@ class BolPlazaDataParser
     }
 
     /**
-     * @param BaseModel|array $entity
-     * @param SimpleXMLElement $xml
+     * @param BaseModel|array $entityData
+     * @param SimpleXMLElement $xmlEntity
      */
     protected static function fillEntityData($entityData, &$xmlEntity)
     {

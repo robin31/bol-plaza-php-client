@@ -2,6 +2,11 @@
 
 namespace Wienkit\BolPlazaClient;
 
+use Wienkit\BolPlazaClient\Entities\BolPlazaCommission;
+use Wienkit\BolPlazaClient\Entities\BolPlazaOfferResponse;
+use Wienkit\BolPlazaClient\Entities\BolPlazaRetailerOfferIdentifier;
+use Wienkit\BolPlazaClient\Requests\BolPlazaDeleteBulkRequest;
+use Wienkit\BolPlazaClient\Requests\BolPlazaUpsertRequest;
 use Wienkit\BolPlazaClient\Entities\BolPlazaReturnItem;
 use Wienkit\BolPlazaClient\Entities\BolPlazaReturnItemStatusUpdate;
 use Wienkit\BolPlazaClient\Entities\BolPlazaProcessStatus;
@@ -10,19 +15,17 @@ use Wienkit\BolPlazaClient\Entities\BolPlazaCancellation;
 use Wienkit\BolPlazaClient\Entities\BolPlazaOfferFile;
 use Wienkit\BolPlazaClient\Entities\BolPlazaShipment;
 use Wienkit\BolPlazaClient\Entities\BolPlazaChangeTransportRequest;
-use Wienkit\BolPlazaClient\Entities\BolPlazaOfferCreate;
-use Wienkit\BolPlazaClient\Entities\BolPlazaOfferUpdate;
 use Wienkit\BolPlazaClient\Entities\BolPlazaShipmentRequest;
-use Wienkit\BolPlazaClient\Entities\BolPlazaStockUpdate;
 use Wienkit\BolPlazaClient\Exceptions\BolPlazaClientException;
 use Wienkit\BolPlazaClient\Exceptions\BolPlazaClientRateLimitException;
+
 
 class BolPlazaClient
 {
     const URL_LIVE = 'https://plazaapi.bol.com';
     const URL_TEST = 'https://test-plazaapi.bol.com';
     const API_VERSION = 'v2';
-    const OFFER_API_VERSION = 'v1';
+    const OFFER_API_VERSION = 'v2';
 
     private $testMode = false;
     private $skipSslVerification = false;
@@ -121,6 +124,7 @@ class BolPlazaClient
         $url = '/services/rest/return-items/' . self::API_VERSION . '/' . $returnItem->ReturnNumber . '/handle';
         $xmlData = BolPlazaDataParser::createXmlFromEntity($status);
         $apiResult = $this->makeRequest('PUT', $url, $xmlData);
+        /** @var BolPlazaProcessStatus $result */
         $result = BolPlazaDataParser::createEntityFromResponse('BolPlazaProcessStatus', $apiResult);
         return $result;
     }
@@ -136,6 +140,7 @@ class BolPlazaClient
         $url = '/services/rest/order-items/' . self::API_VERSION . '/' . $orderItem->OrderItemId . '/cancellation';
         $xmlData = BolPlazaDataParser::createXmlFromEntity($cancellation);
         $apiResult = $this->makeRequest('PUT', $url, $xmlData);
+        /** @var BolPlazaProcessStatus $result */
         $result = BolPlazaDataParser::createEntityFromResponse('BolPlazaProcessStatus', $apiResult);
         return $result;
     }
@@ -151,6 +156,7 @@ class BolPlazaClient
         $url = '/services/rest/transports/' . self::API_VERSION . '/' . $shipment->Transport->TransportId;
         $xmlData = BolPlazaDataParser::createXmlFromEntity($changeRequest);
         $apiResult = $this->makeRequest('PUT', $url, $xmlData);
+        /** @var BolPlazaProcessStatus $result */
         $result = BolPlazaDataParser::createEntityFromResponse('BolPlazaProcessStatus', $apiResult);
         return $result;
     }
@@ -165,6 +171,7 @@ class BolPlazaClient
         $url = '/services/rest/shipments/' . self::API_VERSION;
         $xmlData = BolPlazaDataParser::createXmlFromEntity($shipmentRequest);
         $apiResult = $this->makeRequest('POST', $url, $xmlData);
+        /** @var BolPlazaProcessStatus $result */
         $result = BolPlazaDataParser::createEntityFromResponse('BolPlazaProcessStatus', $apiResult);
         return $result;
     }
@@ -178,62 +185,111 @@ class BolPlazaClient
     {
       $url = '/services/rest/process-status/' . self::API_VERSION . '/' . $processStatusId;
       $apiResult = $this->makeRequest('GET', $url);
+      /** @var BolPlazaProcessStatus $result */
       $result = BolPlazaDataParser::createEntityFromResponse('BolPlazaProcessStatus', $apiResult);
       return $result;
     }
 
     /**
      * Create an offer
-     * @param string $offerId
-     * @param BolPlazaOfferCreate $offerCreate
-     * @return
+     * @param BolPlazaUpsertRequest $upsertRequest
+     * @return string
      */
-    public function createOffer($offerId, Entities\BolPlazaOfferCreate $offerCreate)
+    public function createOffer(BolPlazaUpsertRequest $upsertRequest)
     {
-        $url = '/offers/' . self::OFFER_API_VERSION . '/' . $offerId;
-        $xmlData = BolPlazaDataParser::createOfferXmlFromEntity($offerCreate);
-        $apiResult = $this->makeRequest('POST', $url, $xmlData);
-        return $apiResult;
+        return $this->updateOffer($upsertRequest);
     }
 
     /**
      * Update an offer
-     * @param string $offerId
-     * @param BolPlazaOfferUpdate $offerUpdate
-     * @return
+     * @param BolPlazaUpsertRequest $upsertRequest
+     * @return string
      */
-    public function updateOffer($offerId, Entities\BolPlazaOfferUpdate $offerUpdate)
+    public function updateOffer(BolPlazaUpsertRequest $upsertRequest)
     {
-        $url = '/offers/' . self::OFFER_API_VERSION . '/' . $offerId;
-        $xmlData = BolPlazaDataParser::createOfferXmlFromEntity($offerUpdate);
+        $url = '/offers/' . self::OFFER_API_VERSION . '/';
+        $xmlData = BolPlazaDataParser::createOfferXmlFromEntity($upsertRequest);
         $apiResult = $this->makeRequest('PUT', $url, $xmlData);
         return $apiResult;
     }
 
     /**
      * Update an offer stock
-     * @param string $offerId
-     * @param BolPlazaStockUpdate $stockUpdate
-     * @return
+     *
+     * @param BolPlazaUpsertRequest $upsertRequest
+     * @return string
      */
-    public function updateOfferStock($offerId, Entities\BolPlazaStockUpdate $stockUpdate)
+    public function updateOfferStock(BolPlazaUpsertRequest $upsertRequest)
     {
-        $url = '/offers/' . self::OFFER_API_VERSION . '/' . $offerId . '/stock';
-        $xmlData = BolPlazaDataParser::createOfferXmlFromEntity($stockUpdate);
-        $apiResult = $this->makeRequest('PUT', $url, $xmlData);
-        return $apiResult;
+        return $this->updateOffer($upsertRequest);
     }
 
     /**
      * Delete an offer
-     * @param string $offerId
-     * @return
+     * @param $ean
+     * @param $condition
+     * @return string
      */
-    public function deleteOffer($offerId)
+    public function deleteOffer($ean, $condition)
     {
-        $url = '/offers/' . self::OFFER_API_VERSION . '/' . $offerId;
-        $apiResult = $this->makeRequest('DELETE', $url);
+        $retailerOfferIdentifier = new BolPlazaRetailerOfferIdentifier();
+        $retailerOfferIdentifier->EAN = $ean;
+        $retailerOfferIdentifier->Condition = $condition;
+        $request = new BolPlazaDeleteBulkRequest();
+        $request->RetailerOfferIdentifier = $retailerOfferIdentifier;
+        return $this->deleteOffers($request);
+    }
+
+    /**
+     * Delete (bulk) offer(s)
+     * @param BolPlazaDeleteBulkRequest $deleteBulkRequest
+     * @return string
+     */
+    public function deleteOffers(BolPlazaDeleteBulkRequest $deleteBulkRequest)
+    {
+        $url = '/offers/' . self::OFFER_API_VERSION . '/';
+        $xmlData = BolPlazaDataParser::createOfferXmlFromEntity($deleteBulkRequest);
+        $apiResult = $this->makeRequest('DELETE', $url, $xmlData);
         return $apiResult;
+    }
+
+    /**
+     * @param $ean
+     * @param $condition
+     * @return BolPlazaOfferResponse
+     */
+    public function getSingleOffer($ean, $condition = false)
+    {
+        $url = '/offers/' . self::OFFER_API_VERSION . '/' . $ean;
+        if ($condition) {
+            $url .= '?condition=' . $condition;
+        }
+        $apiResult = $this->makeRequest('GET', $url);
+        /** @var BolPlazaOfferResponse $result */
+        $result = BolPlazaDataParser::createEntityFromResponse('BolPlazaOfferResponse', $apiResult);
+        return $result;
+    }
+
+    /**
+     * Retrieve the commission
+     * @param $ean
+     * @param $condition
+     * @param $price
+     * @return BolPlazaCommission
+     */
+    public function getCommission($ean, $condition = false, $price = false)
+    {
+        $url = '/commission/' . self::OFFER_API_VERSION . '/' . $ean;
+        if ($condition) {
+            $url .= '?condition=' . $condition;
+        }
+        if ($price) {
+            $url .= ($condition ? '&' : '?') . 'price=' . $price;
+        }
+        $apiResult = $this->makeRequest('GET', $url);
+        /** @var BolPlazaCommission $result */
+        $result = BolPlazaDataParser::createEntityFromResponse('BolPlazaCommission', $apiResult);
+        return $result;
     }
 
     /**
@@ -249,6 +305,7 @@ class BolPlazaClient
           $data['filter'] = $filter;
       }
       $apiResult = $this->makeRequest('GET', $url, $data);
+      /** @var BolPlazaOfferFile $result */
       $result = BolPlazaDataParser::createEntityFromResponse('BolPlazaOfferFile', $apiResult);
       return $result;
     }
