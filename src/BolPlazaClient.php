@@ -280,11 +280,12 @@ class BolPlazaClient
     public function getCommission($ean, $condition = false, $price = false)
     {
         $url = '/commission/' . self::OFFER_API_VERSION . '/' . $ean;
+        $params = [];
         if ($condition) {
-            $url .= '?condition=' . $condition;
+            $params['Condition'] = $condition;
         }
         if ($price) {
-            $url .= ($condition ? '&' : '?') . 'price=' . $price;
+            $params['price'] = $price;
         }
         $apiResult = $this->makeRequest('GET', $url);
         /** @var BolPlazaCommission $result */
