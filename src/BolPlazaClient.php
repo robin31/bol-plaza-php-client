@@ -287,7 +287,7 @@ class BolPlazaClient
         if ($price) {
             $params['price'] = $price;
         }
-        $apiResult = $this->makeRequest('GET', $url);
+        $apiResult = $this->makeRequest('GET', $url, $params);
         /** @var BolPlazaCommission $result */
         $result = BolPlazaDataParser::createEntityFromResponse('BolPlazaCommission', $apiResult);
         return $result;
@@ -358,9 +358,11 @@ class BolPlazaClient
         if (in_array($method, ['POST', 'PUT', 'DELETE']) && ! is_null($data)) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         } elseif ($method == 'GET' && !empty($data)) {
-            $suffix = "?";
+            $separator = "?";
+            $suffix = "";
             foreach ($data as $key => $value) {
-              $suffix .= $key . '=' . $value;
+                $suffix .= $separator . $key . '=' . $value;
+                $separator = "&";
             }
             curl_setopt($ch, CURLOPT_URL, $url . $suffix);
         }
