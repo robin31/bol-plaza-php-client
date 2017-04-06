@@ -422,6 +422,8 @@ class BolPlazaClient
     /**
      * Check if the API returned any errors
      *
+     * @see https://plazaapi.bol.com/services/xsd/serviceerror-1.5.xsd
+     * @see https://developers.bol.com/documentatie/plaza-api/developer-guide-plaza-api/error-codes-messages/
      * @param resource $ch The CURL resource of the request
      * @param array $headerInfo
      * @param string $result
@@ -442,6 +444,12 @@ class BolPlazaClient
             }
             if(!empty($result)) {
                 $xmlObject = BolPlazaDataParser::parseXmlResponse($result);
+                if (property_exists($xmlObject, 'ServiceErrors')) {
+                    if (property_exists($xmlObject->ServiceErrors, 'ServiceError')) {
+                        throw new BolPlazaClientException($xmlObject->ServiceErrors->ServiceError->ErrorMessage, (int)$xmlObject->ServiceErrors->ServiceError->ErrorCode);
+                    }
+                }
+                // backwards compatibility
                 if (isset($xmlObject->ErrorCode) && !empty($xmlObject->ErrorCode))
                 {
                     throw new BolPlazaClientException($xmlObject->ErrorMessage, (int)$xmlObject->ErrorCode);
