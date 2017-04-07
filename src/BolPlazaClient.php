@@ -436,7 +436,7 @@ class BolPlazaClient
             throw new BolPlazaClientException(curl_errno($ch));
         }
 
-        if (intval($headerInfo['http_code']) > 200 || intval($headerInfo['http_code']) > 226) {
+        if (intval($headerInfo['http_code']) < 200 || intval($headerInfo['http_code']) > 226) {
             if ($headerInfo['http_code'] == '409') {
                 throw new BolPlazaClientRateLimitException();
             }
