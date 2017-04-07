@@ -12,7 +12,7 @@ namespace Wienkit\BolPlazaClient\Entities;
  * @property string $PaymentShipmentVAT
  * @property string $PaymentStatus
  * @property string $ShipmentDate
- * @property array $PaymentShipmentItems
+ * @property BolPlazaPaymentShipmentItem[] $PaymentShipmentItems
  */
 class BolPlazaPaymentShipment extends BaseModel {
 

@@ -6,10 +6,10 @@ use Wienkit\BolPlazaClient\Entities\BaseModel;
 use Wienkit\BolPlazaClient\Entities\BolPlazaRetailerOfferIdentifier;
 
 /**
- * Class BolPlazaOfferCreate
+ * Class BolPlazaDeleteBulkRequest
  * @package Wienkit\BolPlazaClient\Entities
  *
- * @property BolPlazaRetailerOfferIdentifier RetailerOfferIdentifier
+ * @property BolPlazaRetailerOfferIdentifier[] RetailerOfferIdentifier
  */
 class BolPlazaDeleteBulkRequest extends BaseModel {
 

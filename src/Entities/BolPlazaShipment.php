@@ -6,11 +6,12 @@ namespace Wienkit\BolPlazaClient\Entities;
  * Class BolPlazaShipment
  * @package Wienkit\BolPlazaClient\Entities
  *
- * @property string $OrderId
- * @property string $DateTimeCustomer
+ * @property string $ShipmentId
+ * @property string $ShipmentDate
  * @property string $DateTimeDropShipper
- * @property BolPlazaBuyer $Buyer
- * @property array $OrderItems
+ * @property BolPlazaShipmentDetails $CustomerDetails
+ * @property BolPlazaShipmentTransport $Transport
+ * @property BolPlazaShipmentItem[] $ShipmentItems
  */
 class BolPlazaShipment extends BaseModel {
 

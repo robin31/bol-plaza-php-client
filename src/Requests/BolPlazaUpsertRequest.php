@@ -6,7 +6,7 @@ use Wienkit\BolPlazaClient\Entities\BaseModel;
 use Wienkit\BolPlazaClient\Entities\BolPlazaRetailerOffer;
 
 /**
- * Class BolPlazaOfferCreate
+ * Class BolPlazaUpsertRequest
  * @package Wienkit\BolPlazaClient\Entities
  *
  * @property BolPlazaRetailerOffer RetailerOffer

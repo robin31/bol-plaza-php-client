@@ -6,6 +6,11 @@ namespace Wienkit\BolPlazaClient\Entities;
  * Class BolPlazaCommission
  * @package Wienkit\BolPlazaClient\Entities
  *
+ * @property string $FixedAmount
+ * @property string $Percentage
+ * @property string $TotalCost
+ * @property string $TotalCostWithoutReduction
+ * @property BolPlazaReduction[] $Reductions
  */
 class BolPlazaCommission extends BaseModel {
 

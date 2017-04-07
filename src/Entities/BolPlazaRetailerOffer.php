@@ -8,7 +8,21 @@
 
 namespace Wienkit\BolPlazaClient\Entities;
 
-
+/**
+ * Class BolPlazaRetailerOffer
+ * @package Wienkit\BolPlazaClient\Entities
+ *
+ * @property string $EAN
+ * @property string $Condition
+ * @property string $Price
+ * @property string $DeliveryCode
+ * @property string $QuantityInStock
+ * @property string $Publish
+ * @property string $ReferenceCode
+ * @property string $Description
+ * @property string $Title
+ * @property string $Fulfillment
+ */
 class BolPlazaRetailerOffer extends BaseModel
 {
     protected $xmlEntityName = 'RetailerOffer';

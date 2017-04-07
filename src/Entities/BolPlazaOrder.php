@@ -9,8 +9,8 @@ namespace Wienkit\BolPlazaClient\Entities;
  * @property string $OrderId
  * @property string $DateTimeCustomer
  * @property string $DateTimeDropShipper
- * @property BolPlazaBuyer $Buyer
- * @property array $OrderItems
+ * @property BolPlazaCustomerDetails $CustomerDetails
+ * @property BolPlazaOrderItem[] $OrderItems
  */
 class BolPlazaOrder extends BaseModel {
 

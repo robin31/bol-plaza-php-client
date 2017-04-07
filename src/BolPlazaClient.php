@@ -436,22 +436,30 @@ class BolPlazaClient
             throw new BolPlazaClientException(curl_errno($ch));
         }
 
-        if ( ! in_array($headerInfo['http_code'], array('200', '201', '204'))) // API returns error
-        {
-            if ($headerInfo['http_code'] == '409')
-            {
-                throw new BolPlazaClientRateLimitException;
+        if (intval($headerInfo['http_code']) > 200 || intval($headerInfo['http_code']) > 226) {
+            if ($headerInfo['http_code'] == '409') {
+                throw new BolPlazaClientRateLimitException();
             }
-            if(!empty($result)) {
+
+            if (!empty($result)) {
                 $xmlObject = BolPlazaDataParser::parseXmlResponse($result);
                 if (property_exists($xmlObject, 'ServiceErrors')) {
                     if (property_exists($xmlObject->ServiceErrors, 'ServiceError')) {
-                        throw new BolPlazaClientException($xmlObject->ServiceErrors->ServiceError->ErrorMessage, (int)$xmlObject->ServiceErrors->ServiceError->ErrorCode);
+                        throw new BolPlazaClientException(
+                            $xmlObject->ServiceErrors->ServiceError->ErrorMessage,
+                            (int)$xmlObject->ServiceErrors->ServiceError->ErrorCode
+                        );
                     }
                 }
-                // backwards compatibility
-                if (isset($xmlObject->ErrorCode) && !empty($xmlObject->ErrorCode))
-                {
+                if (property_exists($xmlObject, 'ValidationErrors')) {
+                    if (property_exists($xmlObject->ValidationErrors, 'ValidationError')) {
+                        throw new BolPlazaClientException(
+                            $xmlObject->ValidationErrors->ValidationError->ErrorMessage,
+                            (int)$xmlObject->ValidationErrors->ValidationError->ErrorCode
+                        );
+                    }
+                }
+                if (isset($xmlObject->ErrorCode) && !empty($xmlObject->ErrorCode)) {
                     throw new BolPlazaClientException($xmlObject->ErrorMessage, (int)$xmlObject->ErrorCode);
                 }
             }

@@ -14,7 +14,7 @@ namespace Wienkit\BolPlazaClient\Entities;
  * @param string $Quantity
  * @param string $ReturnDateAnnouncement
  * @param string $ReturnReason
- * @param string $OfferCondition
+ * @param BolPlazaShipmentDetails $CustomerDetails
  */
 class BolPlazaReturnItem extends BaseModel {
 
