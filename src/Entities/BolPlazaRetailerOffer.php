@@ -37,6 +37,6 @@ class BolPlazaRetailerOffer extends BaseModel
         'ReferenceCode',
         'Description',
         'Title',
-        'Fulfillment'
+        'FulfillmentMethod'
     ];
 }
