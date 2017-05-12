@@ -171,7 +171,9 @@ class BolPlazaClientTest extends TestCase
         $offer->Price = '12.00';
         $offer->DeliveryCode = '24uurs-16';
         $offer->Publish = 'true';
-        $offer->ReferenceCode = 'HarryPotter-2ehands-refs';
+        $offer->ReferenceCode = 'HarryPotter-2ehands';
+        $offer->QuantityInStock = 1;
+        $offer->Description = 'boek met koffievlekken';
         $upsertRequest->RetailerOffer = $offer;
         $exceptionThrown = false;
         try {
@@ -188,7 +190,12 @@ class BolPlazaClientTest extends TestCase
         $offer = new BolPlazaRetailerOffer();
         $offer->EAN = '9789076174082';
         $offer->Condition = 'REASONABLE';
+        $offer->Price = '12.00';
+        $offer->DeliveryCode = '24uurs-16';
+        $offer->Publish = 'true';
+        $offer->ReferenceCode = 'HarryPotter-2ehands';
         $offer->QuantityInStock = 2;
+        $offer->Description = 'boek met koffievlekken';        
         $upsertRequest->RetailerOffer = $offer;
         $exceptionThrown = false;
         try {
