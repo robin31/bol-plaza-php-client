@@ -162,6 +162,45 @@ class BolPlazaClientTest extends TestCase
         $this->assertFalse($exceptionThrown);
     }
 
+    public function testCreateBulkOffer()
+    {
+        $upsertRequest = new BolPlazaUpsertRequest();
+
+        $offer = new BolPlazaRetailerOffer();
+        $offer->EAN = '9789076174082';
+        $offer->Condition = 'REASONABLE';
+        $offer->Price = '7.50';
+        $offer->DeliveryCode = '3-5d';
+        $offer->Publish = 'true';
+        $offer->ReferenceCode = 'HarryPotter-2ehands';
+        $offer->QuantityInStock = 1;
+        $offer->Description = 'boek met koffievlekken';
+        $offer->Title = '';
+        $offer->FulfillmentMethod = 'FBR';
+
+        $offer2 = new BolPlazaRetailerOffer();
+        $offer2->EAN = '9789043009614';
+        $offer2->Condition = 'NEW';
+        $offer2->Price = '9.95';
+        $offer2->DeliveryCode = '1-2d';
+        $offer2->Publish = 'true';
+        $offer2->ReferenceCode = '9789043009614';
+        $offer2->QuantityInStock = 5;
+        $offer2->Description = 'PHP en MYSQL voor Dummies';
+        $offer2->Title = '';
+        $offer2->FulfillmentMethod = 'FBR';
+
+        $upsertRequest->RetailerOffer = [$offer, $offer2];
+
+        $exceptionThrown = false;
+        try {
+            $this->client->createOffer($upsertRequest);
+        } catch (Exception $e) {
+            $exceptionThrown = true;
+        }
+        $this->assertFalse($exceptionThrown);
+    }
+
     public function testUpdateOffer()
     {
         $upsertRequest = new BolPlazaUpsertRequest();

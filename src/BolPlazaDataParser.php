@@ -220,7 +220,7 @@ class BolPlazaDataParser
                 // Child entities
                 /* @var $subEntity BaseModel */
                 foreach ($value as $subEntity) {
-                    self::getXmlForSubelements($subEntity, $xmlSubEntity);
+                    self::getXmlForSubelements($subEntity, $xmlEntity);
                 }
             }
         }
