@@ -16,6 +16,7 @@ use Wienkit\BolPlazaClient\Entities\BolPlazaOfferFile;
 use Wienkit\BolPlazaClient\Entities\BolPlazaShipment;
 use Wienkit\BolPlazaClient\Entities\BolPlazaChangeTransportRequest;
 use Wienkit\BolPlazaClient\Entities\BolPlazaShipmentRequest;
+use Wienkit\BolPlazaClient\Entities\BolPlazaInventory;
 use Wienkit\BolPlazaClient\Exceptions\BolPlazaClientException;
 use Wienkit\BolPlazaClient\Exceptions\BolPlazaClientRateLimitException;
 
@@ -325,6 +326,30 @@ class BolPlazaClient
     }
 
     /**
+     * Get inventory (Preview;The Inventory endpoint is currently only accessable for a select pilot-group)
+     * 
+     * The inventory endpoint is a specific LVB/FBB endpoint. Meaning this only provides information 
+     * about your Fulfillment by bol.com Inventory. This endpoint does not provide information on your 
+     * own stock.
+     * 
+     * @see https://developers.bol.com/get-inventory-preview/
+     * @access public
+     * @param int $page
+     * @return BolPlazaInventory
+     */
+    public function getInventory($page = 1)
+    {
+        $url = '/services/rest/inventory';
+        $params = ['page' => (int)$page];
+        
+        $apiResult = $this->makeRequest('GET', $url, $params);
+        /** @var BolPlazaInventory $result */
+        $result = BolPlazaDataParser::createEntityFromResponse('BolPlazaInventory', $apiResult);
+        return $result;
+    }
+
+    
+    /**
      * Makes the request to the server and processes errors
      *
      * @param string $method GET
@@ -374,7 +399,6 @@ class BolPlazaClient
 
         $result = curl_exec($ch);
         $headerInfo = curl_getinfo($ch);
-
         $this->checkForErrors($ch, $headerInfo, $result);
 
         curl_close($ch);

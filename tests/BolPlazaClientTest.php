@@ -310,4 +310,11 @@ class BolPlazaClientTest extends TestCase
         self::assertNotNull($result);
         self::assertStringStartsWith("OfferId,", $result);
     }
+    
+    public function testGetInventory()
+    {
+        $inventory = $this->client->getInventory();
+        $this->assertNotEmpty($inventory);
+        return $inventory;
+    }
 }
