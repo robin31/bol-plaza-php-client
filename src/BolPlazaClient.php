@@ -335,7 +335,7 @@ class BolPlazaClient
      * @see https://developers.bol.com/get-inventory-preview/
      * @access public
      * @param int $page
-     * @return string
+     * @return BolPlazaInventory
      */
     public function getInventory($page = 1)
     {
@@ -348,6 +348,7 @@ class BolPlazaClient
         return $result;
     }
 
+    
     /**
      * Makes the request to the server and processes errors
      *
@@ -398,7 +399,6 @@ class BolPlazaClient
 
         $result = curl_exec($ch);
         $headerInfo = curl_getinfo($ch);
-
         $this->checkForErrors($ch, $headerInfo, $result);
 
         curl_close($ch);
