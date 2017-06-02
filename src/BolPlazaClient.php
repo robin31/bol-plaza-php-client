@@ -326,22 +326,39 @@ class BolPlazaClient
     }
 
     /**
-     * Get inventory (Preview;The Inventory endpoint is currently only accessable for a select pilot-group)
+     * Get inventory
      * 
      * The inventory endpoint is a specific LVB/FBB endpoint. Meaning this only provides information 
      * about your Fulfillment by bol.com Inventory. This endpoint does not provide information on your 
      * own stock.
      * 
-     * @see https://developers.bol.com/get-inventory-preview/
+     * @see https://developers.bol.com/get-inventory/
      * @access public
      * @param int $page
+     * @param string/int $quantity
+     * @param string $stock - valid options: sufficient, insufficient
+     * @param string $state - valid options: saleable, unsaleable
+     * @param string $query 
+     * 
      * @return BolPlazaInventory
      */
-    public function getInventory($page = 1)
+    public function getInventory($page = 1, $quantity=null, $stock=null, $state=null, $query=null)
     {
         $url = '/services/rest/inventory';
         $params = ['page' => (int)$page];
-        
+        // append parameters.
+        if (!is_null($quantity)) {
+            $params['quantity'] = $quantity;
+        }
+        if (!is_null($stock) && in_array($stock, ['sufficient', 'insufficient'])) {
+            $params['stock'] = $stock;
+        }
+        if (!is_null($state) && in_array($state, ['saleable', 'unsaleable'])) {
+            $params['state'] = $state;
+        }
+        if (!is_null($query)) {
+            $params['query'] = $query;
+        }
         $apiResult = $this->makeRequest('GET', $url, $params);
         /** @var BolPlazaInventory $result */
         $result = BolPlazaDataParser::createEntityFromResponse('BolPlazaInventory', $apiResult);
