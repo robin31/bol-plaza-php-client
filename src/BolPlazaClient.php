@@ -336,7 +336,7 @@ class BolPlazaClient
      * @access public
      * @param int $page
      * @param string/int $quantity
-     * @param string $stock - valid options: sufficient, unsufficient
+     * @param string $stock - valid options: sufficient, insufficient
      * @param string $state - valid options: saleable, unsaleable
      * @param string $query 
      * 
@@ -350,7 +350,7 @@ class BolPlazaClient
         if (!is_null($quantity)) {
             $params['quantity'] = $quantity;
         }
-        if (!is_null($stock) && in_array($stock, ['sufficient', 'unsufficient'])) {
+        if (!is_null($stock) && in_array($stock, ['sufficient', 'insufficient'])) {
             $params['stock'] = $stock;
         }
         if (!is_null($state) && in_array($state, ['saleable', 'unsaleable'])) {
