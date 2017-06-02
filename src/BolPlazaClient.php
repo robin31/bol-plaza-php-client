@@ -335,6 +335,11 @@ class BolPlazaClient
      * @see https://developers.bol.com/get-inventory/
      * @access public
      * @param int $page
+     * @param string/int $quantity
+     * @param string $stock - valid options: sufficient, unsufficient
+     * @param string $state - valid options: saleable, unsaleable
+     * @param string $query 
+     * 
      * @return BolPlazaInventory
      */
     public function getInventory($page = 1, $quantity=null, $stock=null, $state=null, $query=null)
