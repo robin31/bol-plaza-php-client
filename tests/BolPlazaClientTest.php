@@ -311,10 +311,34 @@ class BolPlazaClientTest extends TestCase
         self::assertStringStartsWith("OfferId,", $result);
     }
     
+    /**
+     * Test Get Inventory
+     */
     public function testGetInventory()
     {
         $inventory = $this->client->getInventory();
         $this->assertNotEmpty($inventory);
         return $inventory;
+    }
+    
+    /**
+     * Test Get Latest Reductions Filename
+     */
+    public function testGetLatestReductionsFilename()
+    {
+        $filename = $this->client->getLatestReductionsFilename();
+        $this->assertNotEmpty($filename);
+    }
+    
+    /**
+     * Test Get Reductions
+     */
+    
+    public function testGetReductions()
+    {
+        $this->client->setTestMode(false);
+        $reductions = $this->client->getReductions();
+        $this->assertArrayHasKey('filename', $reductions);
+        $this->assertArrayHasKey('result', $reductions);
     }
 }

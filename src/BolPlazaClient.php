@@ -20,7 +20,6 @@ use Wienkit\BolPlazaClient\Entities\BolPlazaInventory;
 use Wienkit\BolPlazaClient\Exceptions\BolPlazaClientException;
 use Wienkit\BolPlazaClient\Exceptions\BolPlazaClientRateLimitException;
 
-
 class BolPlazaClient
 {
     const URL_LIVE = 'https://plazaapi.bol.com';
@@ -30,10 +29,15 @@ class BolPlazaClient
 
     private $testMode = false;
     private $skipSslVerification = false;
-
+    // parse response headers
+    private $parseHeaders = false; 
+    
     private $publicKey;
     private $privateKey;
 
+    // response headers placeholder
+    private $responseHeaders = [];
+    
     /**
      * BolPlazaClient constructor.
      * @param $publicKey
@@ -326,6 +330,44 @@ class BolPlazaClient
     }
 
     /**
+     * Get Latest Reductions filename
+     * @see https://developers.bol.com/reductions-list/
+     * 
+     * @access public
+     * @return string
+     */
+    public function getLatestReductionsFilename()
+    {
+        $url = '/reductions/latest';
+        $apiResult = $this->makeRequest('GET', $url);
+        return $apiResult;
+    }
+    
+    /**
+     * Get Reductions
+     * 
+     * @see https://developers.bol.com/reductions-list/
+     * 
+     * @access public
+     * @return array
+     */
+    public function getReductions()
+    {
+        $url = '/reductions';
+        $this->parseHeaders = true;
+        $apiResult = $this->makeRequest('GET', $url);
+        // get filename from header.
+        if (isset($this->responseHeaders['Content-Disposition'])) {
+            if (preg_match("/\w+\.\w+/", $this->responseHeaders['Content-Disposition'], $matches)) {
+                $filename = isset($matches[0]) ? $matches[0] : null;
+            }
+        }
+        return [
+            'filename' => isset($filename) ? $filename : null,
+            'result' => $apiResult
+        ];
+    }
+    /**
      * Get inventory
      * 
      * The inventory endpoint is a specific LVB/FBB endpoint. Meaning this only provides information 
@@ -413,7 +455,15 @@ class BolPlazaClient
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         }
-
+        if ($this->parseHeaders) {
+            curl_setopt($ch, CURLOPT_HEADERFUNCTION, function($curl, $line) {
+                if (stristr($line, ":")) {
+                    list($key,$value) = explode(":", $line);
+                    $this->responseHeaders[$key] = $value;
+                }
+                return strlen($line);
+            });
+        }
         $result = curl_exec($ch);
         $headerInfo = curl_getinfo($ch);
         $this->checkForErrors($ch, $headerInfo, $result);
