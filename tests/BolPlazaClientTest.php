@@ -336,7 +336,6 @@ class BolPlazaClientTest extends TestCase
     
     public function testGetReductions()
     {
-        $this->client->setTestMode(false);
         $reductions = $this->client->getReductions();
         $this->assertArrayHasKey('filename', $reductions);
         $this->assertArrayHasKey('result', $reductions);
