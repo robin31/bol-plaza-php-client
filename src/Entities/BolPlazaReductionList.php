@@ -26,7 +26,7 @@ class BolPlazaReductionList {
     /**
      * @return string
      */
-    public function getData(): string
+    public function getData()
     {
         return $this->data;
     }
@@ -42,7 +42,7 @@ class BolPlazaReductionList {
     /**
      * @return string
      */
-    public function getFilename(): string
+    public function getFilename()
     {
         return $this->filename;
     }
