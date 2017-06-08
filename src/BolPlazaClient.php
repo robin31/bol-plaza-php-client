@@ -4,6 +4,7 @@ namespace Wienkit\BolPlazaClient;
 
 use Wienkit\BolPlazaClient\Entities\BolPlazaCommission;
 use Wienkit\BolPlazaClient\Entities\BolPlazaOfferResponse;
+use Wienkit\BolPlazaClient\Entities\BolPlazaReductionList;
 use Wienkit\BolPlazaClient\Entities\BolPlazaRetailerOfferIdentifier;
 use Wienkit\BolPlazaClient\Requests\BolPlazaDeleteBulkRequest;
 use Wienkit\BolPlazaClient\Requests\BolPlazaUpsertRequest;
@@ -349,23 +350,21 @@ class BolPlazaClient
      * @see https://developers.bol.com/reductions-list/
      * 
      * @access public
-     * @return array
+     * @return BolPlazaReductionList
      */
     public function getReductions()
     {
         $url = '/reductions';
         $this->parseHeaders = true;
         $apiResult = $this->makeRequest('GET', $url);
+        $filename = "";
         // get filename from header.
         if (isset($this->responseHeaders['Content-Disposition'])) {
             if (preg_match("/\w+\.\w+/", $this->responseHeaders['Content-Disposition'], $matches)) {
                 $filename = isset($matches[0]) ? $matches[0] : null;
             }
         }
-        return [
-            'filename' => isset($filename) ? $filename : null,
-            'result' => $apiResult
-        ];
+        return new BolPlazaReductionList($apiResult, $filename);
     }
     /**
      * Get inventory

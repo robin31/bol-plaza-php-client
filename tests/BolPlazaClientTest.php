@@ -234,7 +234,7 @@ class BolPlazaClientTest extends TestCase
         $offer->Publish = 'true';
         $offer->ReferenceCode = 'HarryPotter-2ehands';
         $offer->QuantityInStock = 2;
-        $offer->Description = 'boek met koffievlekken';        
+        $offer->Description = 'boek met koffievlekken';
         $upsertRequest->RetailerOffer = $offer;
         $exceptionThrown = false;
         try {
@@ -310,7 +310,7 @@ class BolPlazaClientTest extends TestCase
         self::assertNotNull($result);
         self::assertStringStartsWith("OfferId,", $result);
     }
-    
+
     /**
      * Test Get Inventory
      */
@@ -321,27 +321,23 @@ class BolPlazaClientTest extends TestCase
         return $inventory;
     }
 
-    
+
     /**
      * Test Get Latest Reductions Filename
-     *
-     * @todo once Bol.com adds the reduction functionality to their test environment enable these unit tests
+     */
     public function testGetLatestReductionsFilename()
     {
         $filename = $this->client->getLatestReductionsFilename();
-        $this->assertNotEmpty($filename);
+        $this->assertNotNull($filename);
     }
-    */
-    
+
     /**
      * Test Get Reductions
-     * @todo once Bol.com adds the reduction functionality to their test environment enable these unit tests
-    
+     */
     public function testGetReductions()
     {
         $reductions = $this->client->getReductions();
-        $this->assertArrayHasKey('filename', $reductions);
-        $this->assertArrayHasKey('result', $reductions);
+        $this->assertNotNull($reductions->getFilename());
+        $this->assertNotNull($reductions->getData());
     }
-     */
 }
