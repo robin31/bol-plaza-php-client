@@ -34,7 +34,7 @@ class BolPlazaReductionList {
     /**
      * @param string $data
      */
-    public function setData(string $data)
+    public function setData($data)
     {
         $this->data = $data;
     }
@@ -50,7 +50,7 @@ class BolPlazaReductionList {
     /**
      * @param string $filename
      */
-    public function setFilename(string $filename)
+    public function setFilename($filename)
     {
         $this->filename = $filename;
     }
