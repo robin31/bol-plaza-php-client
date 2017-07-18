@@ -7,7 +7,7 @@ namespace Wienkit\BolPlazaClient\Entities;
  * @package Wienkit\BolPlazaClient\Entities
  *
  * @param string $SalutationCode
- * @param string $Firstname
+ * @param string $FirstName
  * @param string $Surname
  * @param string $Streetname
  * @param string $Housenumber
