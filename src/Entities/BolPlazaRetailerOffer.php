@@ -17,11 +17,13 @@ namespace Wienkit\BolPlazaClient\Entities;
  * @property string $Price
  * @property string $DeliveryCode
  * @property string $QuantityInStock
+ * @property string $UnreservedStock
  * @property string $Publish
  * @property string $ReferenceCode
  * @property string $Description
  * @property string $Title
  * @property string $Fulfillment
+ * @property BolPlazaRetailerOfferStatus $Status
  */
 class BolPlazaRetailerOffer extends BaseModel
 {
@@ -33,10 +35,15 @@ class BolPlazaRetailerOffer extends BaseModel
         'Price',
         'DeliveryCode',
         'QuantityInStock',
+        'UnreservedStock',
         'Publish',
         'ReferenceCode',
         'Description',
         'Title',
         'FulfillmentMethod'
+    ];
+    
+    protected $nestedEntities = [
+        'Status' => 'BolPlazaRetailerOfferStatus'
     ];
 }
