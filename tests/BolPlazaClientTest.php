@@ -312,6 +312,20 @@ class BolPlazaClientTest extends TestCase
     }
 
     /**
+     * @TODO: Ignored because Test env returns other logic than prod
+     */
+    public function testGetSingleOffer()
+    {
+//        $eancode = '1234567890123';
+//        try {
+//            $result = $this->client->getSingleOffer($eancode);
+//        } catch (\Exception $e) {
+//            $result = null;
+//        }
+//        $this->assertNotNull($result);
+//        $this->assertEquals($result->EAN, $eancode);
+    }
+    /**
      * Test Get Inventory
      */
     public function testGetInventory()
