@@ -28,7 +28,8 @@ class BolPlazaReturnItem extends BaseModel {
         'Title',
         'Quantity',
         'ReturnDateAnnouncement',
-        'ReturnReason'
+        'ReturnReason',
+        'ReturnReasonComments'
     ];
 
     protected $nestedEntities = [
