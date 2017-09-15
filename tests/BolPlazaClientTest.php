@@ -19,6 +19,8 @@ class BolPlazaClientTest extends TestCase
 
     public function setUp()
     {
+        date_default_timezone_set('Europe/Amsterdam');
+        
         $publicKey = getenv('PHP_PUBKEY');
         $privateKey = getenv('PHP_PRIVKEY');
 
@@ -63,13 +65,20 @@ class BolPlazaClientTest extends TestCase
         $this->assertEquals($result->eventType, 'CANCEL_ORDER');
     }
 
+    /**
+     * Test Shipment.
+     * As of version 2.1 DateTime, ExpectedDeliveryDate are no longer required
+     * @see: https://developers.bol.com/shipments-2-1/#Create_a_shipment_21
+     */
     public function testProcessShipments()
     {
         $shipment = new BolPlazaShipmentRequest();
         $shipment->OrderItemId = '123';
         $shipment->ShipmentReference = 'bolplazatest123';
+        /** deprecated
         $shipment->DateTime = date('Y-m-d\TH:i:s');
         $shipment->ExpectedDeliveryDate = date('Y-m-d\TH:i:s');
+        **/
         $transport = new BolPlazaTransport();
         $transport->TransporterCode = 'GLS';
         $transport->TrackAndTrace = '123456789';
