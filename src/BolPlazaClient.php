@@ -169,14 +169,15 @@ class BolPlazaClient
 
     /**
      * Add a shipment
+     * @see https://developers.bol.com/shipments-2-1/#Create_a_shipment_21
      * @param BolPlazaShipmentRequest $shipmentRequest
      * @return BolPlazaProcessStatus
      */
     public function processShipment(Entities\BolPlazaShipmentRequest $shipmentRequest)
     {
         $url = '/services/rest/shipments/' . self::API_VERSION;
-        $xmlData = BolPlazaDataParser::createXmlFromEntity($shipmentRequest);
-        $apiResult = $this->makeRequest('POST', $url, $xmlData);
+        $xmlData = BolPlazaDataParser::createXmlFromEntity($shipmentRequest, '2.1');
+        $apiResult = $this->makeRequest('POST', $url, $xmlData, ['Accept: application/vnd.shipments-v2.1+xml']);
         /** @var BolPlazaProcessStatus $result */
         $result = BolPlazaDataParser::createEntityFromResponse('BolPlazaProcessStatus', $apiResult);
         return $result;
@@ -413,16 +414,18 @@ class BolPlazaClient
      * @param string $method GET
      * @param string $endpoint URI of the resource
      * @param null|string $data POST data
+     * @param array $headers Additional HTTP Headers
      * @return string XML
      * @throws BolPlazaClientException
      * @throws BolPlazaClientRateLimitException
      */
-    protected function makeRequest($method = 'GET', $endpoint, $data = null)
+    protected function makeRequest($method = 'GET', $endpoint, $data = null, $headers=[])
     {
         $date = gmdate('D, d M Y H:i:s T');
         $contentType = 'application/xml';
         $url = $this->getUrlFromEndpoint($endpoint);
-
+        $headers = (isset($headers) && is_array($headers)) ? $headers : [];
+        
         $signature = $this->getSignature($method, $contentType, $date, $endpoint);
 
         $ch = curl_init();
@@ -432,11 +435,11 @@ class BolPlazaClient
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         curl_setopt($ch, CURLOPT_HEADER, false);
         curl_setopt($ch, CURLOPT_USERAGENT, 'Wienkit BolPlaza PHP Client (wienkit.com)');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge([
             'Content-type: ' . $contentType,
             'X-BOL-Date: ' . $date,
             'X-BOL-Authorization: ' . $signature
-        ]);
+        ], $headers));
 
         if (in_array($method, ['POST', 'PUT', 'DELETE']) && ! is_null($data)) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
