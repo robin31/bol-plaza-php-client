@@ -363,4 +363,32 @@ class BolPlazaClientTest extends TestCase
         $this->assertNotNull($reductions->getFilename());
         $this->assertNotNull($reductions->getData());
     }
+
+    /**
+     * Test Get delivery windows
+     * @group delivery
+     */
+    public function testGetDeliveryWindows()
+    {
+        $deliveryDate = new \DateTime();
+        // get next thursday
+        $deliveryDate->modify('next thursday');
+        $qty = 100;
+        $deliveryWindows = $this->client->getDeliveryWindows($deliveryDate, $qty);
+        $this->assertNotEmpty($deliveryWindows);
+    }
+    /**
+     * Test Get Empty Delivery windows
+     * @group delivery
+     */
+    public function testGetDeliveryWindowsEmpty()
+    {
+        $deliveryDate = new \DateTime();
+        // get date previous week to force null response.
+        $deliveryDate->modify('previous thursday');
+        $qty = 100;
+        $deliveryWindows = $this->client->getDeliveryWindows($deliveryDate, $qty);
+        $this->assertEquals(count($deliveryWindows), 0);
+    }
+    
 }
