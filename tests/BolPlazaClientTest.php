@@ -322,18 +322,20 @@ class BolPlazaClientTest extends TestCase
 
     /**
      * @TODO: Ignored because Test env returns other logic than prod
+     * @group no-ci-test
      */
     public function testGetSingleOffer()
     {
-//        $eancode = '1234567890123';
-//        try {
-//            $result = $this->client->getSingleOffer($eancode);
-//        } catch (\Exception $e) {
-//            $result = null;
-//        }
-//        $this->assertNotNull($result);
-//        $this->assertEquals($result->EAN, $eancode);
+        $eancode = '1234567890123';
+        try {
+            $result = $this->client->getSingleOffer($eancode);
+        } catch (\Exception $e) {
+            $result = null;
+        }
+        $this->assertNotNull($result);
+        $this->assertEquals($result->EAN, $eancode);
     }
+
     /**
      * Test Get Inventory
      */
@@ -363,4 +365,32 @@ class BolPlazaClientTest extends TestCase
         $this->assertNotNull($reductions->getFilename());
         $this->assertNotNull($reductions->getData());
     }
+
+    /**
+     * Test Get delivery windows
+     * @group delivery
+     */
+    public function testGetDeliveryWindows()
+    {
+        $deliveryDate = new \DateTime();
+        // get next thursday
+        $deliveryDate->modify('next thursday');
+        $qty = 100;
+        $deliveryWindows = $this->client->getDeliveryWindows($deliveryDate, $qty);
+        $this->assertNotEmpty($deliveryWindows);
+    }
+    /**
+     * Test Get Empty Delivery windows
+     * @group delivery
+     */
+    public function testGetDeliveryWindowsEmpty()
+    {
+        $deliveryDate = new \DateTime();
+        // get date previous week to force null response.
+        $deliveryDate->modify('previous thursday');
+        $qty = 100;
+        $deliveryWindows = $this->client->getDeliveryWindows($deliveryDate, $qty);
+        $this->assertEquals(0, count($deliveryWindows));
+    }
+    
 }

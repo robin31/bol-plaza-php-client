@@ -3,6 +3,7 @@
 namespace Wienkit\BolPlazaClient;
 
 use Wienkit\BolPlazaClient\Entities\BolPlazaCommission;
+use Wienkit\BolPlazaClient\Entities\BolPlazaDeliveryWindowTimeSlot;
 use Wienkit\BolPlazaClient\Entities\BolPlazaOfferResponse;
 use Wienkit\BolPlazaClient\Entities\BolPlazaReductionList;
 use Wienkit\BolPlazaClient\Entities\BolPlazaRetailerOfferIdentifier;
@@ -407,6 +408,23 @@ class BolPlazaClient
         return $result;
     }
 
+    /**
+     * Get delivery windows for specific date (LvB)
+     * 
+     * @see https://developers.bol.com/get-delivery-window/
+     * @param \DateTime $deliveryDate
+     * @param int $qty
+     * @return BolPlazaDeliveryWindowTimeSlot[]
+     */
+    public function getDeliveryWindows(\DateTime $deliveryDate, $qty)
+    {
+        $apiResult = $this->makeRequest('GET', '/services/rest/inbounds/delivery-windows', [
+            'delivery-date' => $deliveryDate->format('Y-m-d'),
+            'items-to-send' => (int)$qty
+        ]);
+        $timeSlots = BolPlazaDataParser::createCollectionFromResponse('BolPlazaDeliveryWindowTimeSlot', $apiResult);
+        return $timeSlots;
+    }
     
     /**
      * Makes the request to the server and processes errors
