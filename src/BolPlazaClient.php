@@ -3,6 +3,7 @@
 namespace Wienkit\BolPlazaClient;
 
 use Wienkit\BolPlazaClient\Entities\BolPlazaCommission;
+use Wienkit\BolPlazaClient\Entities\BolPlazaDeliveryWindowTimeSlot;
 use Wienkit\BolPlazaClient\Entities\BolPlazaOfferResponse;
 use Wienkit\BolPlazaClient\Entities\BolPlazaReductionList;
 use Wienkit\BolPlazaClient\Entities\BolPlazaRetailerOfferIdentifier;
@@ -413,7 +414,7 @@ class BolPlazaClient
      * @see https://developers.bol.com/get-delivery-window/
      * @param \DateTime $deliveryDate
      * @param int $qty
-     * @return BolPlazaDeliveryWindowTimeSlot
+     * @return BolPlazaDeliveryWindowTimeSlot[]
      */
     public function getDeliveryWindows(\DateTime $deliveryDate, $qty)
     {

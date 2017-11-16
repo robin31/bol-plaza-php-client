@@ -322,18 +322,20 @@ class BolPlazaClientTest extends TestCase
 
     /**
      * @TODO: Ignored because Test env returns other logic than prod
+     * @group no-ci-test
      */
     public function testGetSingleOffer()
     {
-//        $eancode = '1234567890123';
-//        try {
-//            $result = $this->client->getSingleOffer($eancode);
-//        } catch (\Exception $e) {
-//            $result = null;
-//        }
-//        $this->assertNotNull($result);
-//        $this->assertEquals($result->EAN, $eancode);
+        $eancode = '1234567890123';
+        try {
+            $result = $this->client->getSingleOffer($eancode);
+        } catch (\Exception $e) {
+            $result = null;
+        }
+        $this->assertNotNull($result);
+        $this->assertEquals($result->EAN, $eancode);
     }
+
     /**
      * Test Get Inventory
      */
@@ -388,7 +390,7 @@ class BolPlazaClientTest extends TestCase
         $deliveryDate->modify('previous thursday');
         $qty = 100;
         $deliveryWindows = $this->client->getDeliveryWindows($deliveryDate, $qty);
-        $this->assertEquals(count($deliveryWindows), 0);
+        $this->assertEquals(0, count($deliveryWindows));
     }
     
 }
