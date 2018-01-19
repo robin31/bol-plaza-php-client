@@ -1,5 +1,5 @@
 {
-  "name": "wienkit/bol-plaza-php-client",
+  "name": "robin31/bol-plaza-php-client",
   "type": "library",
   "description": "A PHP Client for the BOL.com Plaza API",
   "keywords": [
