@@ -88,10 +88,11 @@ class BolPlazaClient
      * @param int $page The page of the set of shipments
      * @return array
      */
-    public function getShipments($page = 1)
+    public function getShipments($page = 1, $fulfilment = 'ALL')
     {
         $url = '/services/rest/shipments/' . self::API_VERSION;
-        $apiResult = $this->makeRequest('GET', $url, array("page" => $page));
+        $headers = ['Accept: application/vnd.shipments-v2.1+xml'];
+        $apiResult = $this->makeRequest('GET', $url, array("page" => $page, "fulfilment-method" => $fulfilment), $headers);
         $shipments = BolPlazaDataParser::createCollectionFromResponse('BolPlazaShipment', $apiResult);
         return $shipments;
     }
