@@ -73,11 +73,12 @@ class BolPlazaClient
      * Get list of orders
      * @return array
      */
-    public function getOrders()
+    public function getOrders($page = 1, $fulfilment = 'FBR')
     {
         $url = '/services/rest/orders/' . self::API_VERSION;
 
-        $apiResult = $this->makeRequest('GET', $url);
+        $headers = ['Accept: application/vnd.orders-v2.1+xml'];
+        $apiResult = $this->makeRequest('GET', $url, array("page" => $page, "fulfilment-method" => $fulfilment), $headers);
         $orders = BolPlazaDataParser::createCollectionFromResponse('BolPlazaOrder', $apiResult);
 
         return $orders;
