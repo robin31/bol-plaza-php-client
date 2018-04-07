@@ -85,6 +85,23 @@ class BolPlazaClient
     }
 
     /**
+     * @param int $orderId
+     * @return \Wienkit\BolPlazaClient\Entities\BolPlazaOrder
+     * @throws \Wienkit\BolPlazaClient\Exceptions\BolPlazaClientException
+     * @throws \Wienkit\BolPlazaClient\Exceptions\BolPlazaClientRateLimitException
+     */
+    public function getSingleOrder($orderId = 0)
+    {
+        $url = '/services/rest/orders/' . self::API_VERSION . '/' . $orderId;
+
+        $headers = ['Accept: application/vnd.orders-v2.1+xml'];
+        $apiResult = $this->makeRequest('GET', $url, null, $headers);
+        $order = BolPlazaDataParser::createEntityFromResponse('BolPlazaOrder', $apiResult);
+
+        return $order;
+    }
+
+    /**
      * Get list of shipments
      * @param int $page The page of the set of shipments
      * @return array
